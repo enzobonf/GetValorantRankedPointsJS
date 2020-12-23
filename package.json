@@ -1,0 +1,20 @@
+{
+  "name": "get-valorant-ranked-points",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Enzo Bonfante",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "axios-cookiejar-support": "^1.0.0",
+    "dotenv": "^8.2.0",
+    "moment": "^2.29.1",
+    "tough-cookie": "^4.0.0"
+  }
+}
