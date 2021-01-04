@@ -104,3 +104,7 @@ dist
 .tern-port
 
 ranks.png
+config.json
+get-valorant-ranked-points-win.exe
+get-valorant-ranked-points-macos
+get-valorant-ranked-points-linux

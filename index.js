@@ -2,15 +2,22 @@ const axios = require('axios').default;
 const axiosCookieJarSupport = require('axios-cookiejar-support').default;
 const tough = require('tough-cookie');
 const moment = require('moment');
-moment.locale('pt-br');
+const fs = require('fs');
 
-require('dotenv').config()
+moment.locale('pt-br');
 
 axiosCookieJarSupport(axios);
  
 const cookieJar = new tough.CookieJar();
 
-const auth = () => {
+const readline = require('readline')
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+const auth = (authData) => {
 
   return new Promise((resolve, reject)=>{
 
@@ -26,9 +33,9 @@ const auth = () => {
         
         //create an .env file at the root of the project and add these variables
         data = {
-            'type': 'auth',
-            'username': process.env.USER,
-            'password': process.env.PASSWORD
+            type: 'auth',
+            username: authData.username,
+            password: authData.password
         };
         
         axios.put('https://auth.riotgames.com/api/v1/authorization', data, {jar: cookieJar, withCredentials: true})
@@ -140,15 +147,16 @@ const getRankString = rankId => {
 
 }
 
-const getRankedInfo = async (startIndex = 0, endIndex = '') => {
+const getRankedInfo = async (playerId, startIndex = 0, endIndex = '') => {
 
-  let playerId = await auth();
   let res = await axios.get(`https://pd.NA.a.pvp.net/mmr/v1/players/${playerId}/competitiveupdates?startIndex=${startIndex}&endIndex=${endIndex}`);
 
   let matches = res.data.Matches.reverse();
   matches = matches.filter(match=>match.CompetitiveMovement != 'MOVEMENT_UNKNOWN'); //filtra as partidas rankeadas apenas;
 
-  if(matches.length){
+  let numMatches = matches.length;
+
+  if(numMatches > 0){
 
     matches.forEach(match=>{
 
@@ -159,11 +167,62 @@ const getRankedInfo = async (startIndex = 0, endIndex = '') => {
 
     });
 
+    console.log(`\nFaltam ${100 - matches[numMatches -1 ].TierProgressAfterUpdate} pontos para o ${getRankString(matches[numMatches -1].TierAfterUpdate + 1)}`);
+
   }
 
 }
 
-getRankedInfo();
+const getAuthData = async () => {
+
+  return new Promise(async (resolve, reject)=>{
+
+    try{
+
+      if(!fs.existsSync('config.json')){
+
+        let authData = {};
+        console.log('Estas informações serão repassadas diretamente aos servidores da Riot, não sendo de forma alguma armazenadas remotamente.');
+        
+        await rl.question('Usuário: ', answer=>{
+            authData.username = answer;
+            rl.question('Senha: ', answer=>{
+
+              authData.password = answer;
+              fs.writeFileSync('config.json', JSON.stringify(authData));
+              resolve(authData);
+
+            });
+        });
+
+
+      }
+      else{
+        
+        let raw = fs.readFileSync('config.json');
+        const authData = JSON.parse(raw);
+        resolve(authData);
+
+      }
+
+    }
+    catch(e){
+      reject(e);
+    }
+
+  });
+
+};
+
+const main = async () => {
+  
+  let authData = await getAuthData();
+  let playerId = await auth(authData);
+  await getRankedInfo(playerId);
+
+}
+
+main();
 
 
 
