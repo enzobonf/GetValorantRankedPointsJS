@@ -42,7 +42,7 @@ const auth = (authData) => {
         .then(response=>{
           
           let uri = response.data.response.parameters.uri;
-          let strTokens = uri.replace('https://beta.playvalorant.com/opt_in#', '').split('&');
+          let strTokens = uri.replace('https://playvalorant.com/opt_in#', '').split('&');
 
           let arrayTokens = {};
 
