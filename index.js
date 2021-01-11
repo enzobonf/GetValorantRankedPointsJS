@@ -105,8 +105,11 @@ const getMovementString = movement => {
     case 'PROMOTED':
       return 'Promoção';
 
-    default:
+    case 'DEMOTED':
       return 'Rebaixamento';
+
+    default:
+      return 'Classificação inalterada';
 
   }
 
