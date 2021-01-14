@@ -139,7 +139,6 @@ const getRankedInfo = async (playerId, startIndex = 0, endIndex = '') => {
 
   let matches = res.data.Matches.reverse();
   matches = matches.filter(match=>match.TierBeforeUpdate != 0); //filtra as partidas rankeadas apenas;
-  console.log(matches);
 
   let numMatches = matches.length;
 
