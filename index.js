@@ -84,33 +84,16 @@ const auth = (authData) => {
     });
 }
 
-const getMovementString = movement => {
+const getMovementString = (before, after) => {
 
-  switch(movement){
-
-    case 'INCREASE':
-      return 'Classificação aumentou';
-    case 'MAJOR_INCREASE':
-      return 'Classificação aumentou muito';
-    case 'MINOR_INCREASE':
-      return 'Classificação aumentou um pouco';
-
-    case 'DECREASE':
-      return 'Classificação caiu';
-    case 'MAJOR_DECREASE':
-      return 'Classificação caiu muito';
-    case 'MINOR_DECREASE':
-      return 'Classificação caiu um pouco';
-
-    case 'PROMOTED':
-      return 'Promoção';
-
-    case 'DEMOTED':
-      return 'Rebaixamento';
-
-    default:
-      return 'Classificação inalterada';
-
+  if(after > before){
+    return 'Promoção';
+  }
+  else if(after < before){
+    return 'Rebaixamento';
+  }
+  else{
+    return 'Elo inalterado';
   }
 
 }
@@ -155,7 +138,8 @@ const getRankedInfo = async (playerId, startIndex = 0, endIndex = '') => {
   let res = await axios.get(`https://pd.NA.a.pvp.net/mmr/v1/players/${playerId}/competitiveupdates?startIndex=${startIndex}&endIndex=${endIndex}`);
 
   let matches = res.data.Matches.reverse();
-  matches = matches.filter(match=>match.CompetitiveMovement != 'MOVEMENT_UNKNOWN'); //filtra as partidas rankeadas apenas;
+  matches = matches.filter(match=>match.TierBeforeUpdate != 0); //filtra as partidas rankeadas apenas;
+  console.log(matches);
 
   let numMatches = matches.length;
 
@@ -164,13 +148,13 @@ const getRankedInfo = async (playerId, startIndex = 0, endIndex = '') => {
     matches.forEach(match=>{
 
       console.log('\nPartida encontrada:', moment(match.MatchStartTime).format('DD/MM/YYYY HH:mm'));
-      console.log('Pontos antes:', match.TierProgressBeforeUpdate, '|| Pontos depois:', match.TierProgressAfterUpdate);
+      console.log('Pontos antes:', match.RankedRatingBeforeUpdate, '|| Pontos depois:', match.RankedRatingAfterUpdate);
       console.log('Rank antes:', getRankString(match.TierBeforeUpdate), '|| Rank depois:', getRankString(match.TierAfterUpdate));
-      console.log('Movimento:', getMovementString(match.CompetitiveMovement));
+      console.log('Movimento:', getMovementString(match.TierBeforeUpdate, match.TierAfterUpdate));
 
     });
 
-    console.log(`\nFaltam ${100 - matches[numMatches -1 ].TierProgressAfterUpdate} pontos para o ${getRankString(matches[numMatches -1].TierAfterUpdate + 1)}`);
+    console.log(`\nFaltam ${100 - matches[numMatches - 1 ].TierAfterUpdate} pontos para o ${getRankString(matches[numMatches -1].TierAfterUpdate + 1)}`);
 
   }
 
