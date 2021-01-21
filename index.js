@@ -52,14 +52,14 @@ const auth = (authData) => {
 
           //console.log('Access Token:', arrayTokens.access_token)
           
-
+          axios.defaults.headers.common['X-Riot-ClientPlatform'] = "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9";
           axios.defaults.headers.common['Authorization'] = `Bearer ${arrayTokens.access_token}`
 
           axios.post('https://entitlements.auth.riotgames.com/api/token/v1', {}, {jar: cookieJar, withCredentials: true})
           .then(response=>{
 
             let entitlements_token = response.data.entitlements_token;
-            axios.defaults.headers.common['X-Riot-Entitlements-JWT'] = entitlements_token
+            axios.defaults.headers.common['X-Riot-Entitlements-JWT'] = entitlements_token;
 
            //console.log('\nEntitlements Token:', entitlements_token);
 
