@@ -153,8 +153,11 @@ const getRankedInfo = async (playerId, startIndex = 0, endIndex = '') => {
 
     });
 
-    console.log(`\nFaltam ${100 - matches[numMatches - 1 ].TierAfterUpdate} pontos para o ${getRankString(matches[numMatches -1].TierAfterUpdate + 1)}`);
+    console.log(`\nFaltam ${100 - matches[numMatches - 1 ].RankedRatingAfterUpdate} pontos para o ${getRankString(matches[numMatches -1].TierAfterUpdate + 1)}`);
 
+  }
+  else{
+    console.log('\nNenhuma partida competitiva encontrada nas últimas 10 :/');
   }
 
 }
